@@ -28,7 +28,7 @@ def login_required(f):
     return decorated_function
 
 # ================= DATABASE CONNECTION =================
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://postgres:D4wxQYWmuuL6PTO7@db.duupwhaklxcvmbfzynyz.supabase.co:5432/postgres')
+DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://postgres.duupwhaklxcvmbfzynyz:D4wxQYWmuuL6PTO7@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres')
 
 def get_db():
     try:
