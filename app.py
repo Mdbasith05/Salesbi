@@ -380,8 +380,8 @@ def upload_history():
             SELECT u.id, u.filename, u.upload_date, u.total_rows, u.total_columns,
                    ar.total_sales, ar.total_profit
             FROM uploads u
-            LEFT JOIN analysis_results ar ON ar.upload_id = u.id
-            WHERE u.user_id = ?
+            LEFT JOIN analysis_results ar ON ar.upload_id = u.i
+            WHERE u.user_id = %s
             ORDER BY u.upload_date DESC LIMIT 10
         """, (session["user_id"],))
 
