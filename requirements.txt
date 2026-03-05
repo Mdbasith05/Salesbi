@@ -1,0 +1,6 @@
+flask
+pandas
+numpy
+matplotlib
+psycopg2-binary
+gunicorn
