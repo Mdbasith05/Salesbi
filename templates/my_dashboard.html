@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SalesBI — My Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0d1117;--sb:#090d18;--card:#131929;--c2:#1a2235;--bo:rgba(255,255,255,0.07);--blue:#1a73e8;--green:#34a853;--red:#ea4335;--yellow:#fbbc04;--purple:#a142f4;--text:#e6edf3;--muted:#6b7280;--f:'Plus Jakarta Sans',sans-serif;}
+body{font-family:var(--f);background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+.sb{width:230px;background:var(--sb);border-right:1px solid var(--bo);position:fixed;height:100vh;display:flex;flex-direction:column;z-index:100;}
+.sbl{padding:22px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--bo);}
+.sbi{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--green));display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 4px 18px rgba(26,115,232,0.3);}
+.sbt{font-size:19px;font-weight:800;}.sbt span{color:var(--blue);}
+.nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:2px;}
+.ns{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.1px;padding:12px 10px 4px;}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--muted);font-size:13px;font-weight:500;text-decoration:none;transition:all 0.15s;border:1px solid transparent;}
+.ni:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.ni.on{background:rgba(26,115,232,0.14);color:var(--blue);border-color:rgba(26,115,232,0.18);}
+.sf{padding:14px 10px;border-top:1px solid var(--bo);}
+.so{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(234,67,53,0.08);border:1px solid rgba(234,67,53,0.15);border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;color:#ef5350;transition:all 0.2s;width:100%;}
+.so:hover{background:rgba(234,67,53,0.14);}
+.tb{position:fixed;top:0;left:230px;right:0;height:55px;background:rgba(13,17,23,0.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--bo);z-index:99;display:flex;align-items:center;justify-content:space-between;padding:0 24px;}
+.btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;font-family:var(--f);cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;text-decoration:none;}
+.bp{background:var(--blue);color:#fff;}.bp:hover{background:#1254c0;transform:translateY(-1px);}
+.bh{background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--bo);}.bh:hover{background:rgba(255,255,255,0.09);}
+.main{margin-left:230px;margin-top:55px;padding:24px;display:flex;flex-direction:column;gap:18px;}
+.card{background:var(--card);border:1px solid var(--bo);border-radius:14px;padding:20px;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.ct{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;}
+.ctl{font-size:15px;font-weight:700;}
+/* HERO CARD */
+.hero{background:linear-gradient(135deg,#0f1e38,#0d2414);border:1px solid rgba(26,115,232,0.2);border-radius:14px;padding:24px 28px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(26,115,232,0.15),transparent 70%);}
+.hero::after{content:'';position:absolute;bottom:-40px;left:30%;width:150px;height:150px;background:radial-gradient(circle,rgba(52,168,83,0.1),transparent 70%);}
+.hav{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 6px 24px rgba(26,115,232,0.35);}
+.hinfo{flex:1;z-index:1;}
+.hname{font-size:22px;font-weight:800;margin-bottom:4px;}
+.hemail{font-size:13px;color:var(--muted);}
+.hstats{display:flex;gap:28px;z-index:1;}
+.hst{text-align:center;}
+.hst-v{font-size:26px;font-weight:800;color:var(--blue);}
+.hst-l{font-size:11px;color:var(--muted);margin-top:2px;}
+/* KPI GRID */
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.kc{background:var(--card);border:1px solid var(--bo);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+.kc:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.3);}
+.kg2{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;filter:blur(28px);opacity:0.2;}
+.kl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;}
+.kv{font-size:24px;font-weight:800;margin:8px 0 5px;}
+.ks{font-size:11px;color:var(--muted);}
+.ki{position:absolute;right:14px;top:14px;font-size:20px;opacity:0.13;}
+/* CHARTS */
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* HISTORY TABLE */
+.tw{overflow-x:auto;max-height:380px;overflow-y:auto;}
+.tw::-webkit-scrollbar{width:3px;}.tw::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{padding:9px 13px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;background:var(--c2);position:sticky;top:0;border-bottom:1px solid var(--bo);}
+tbody td{padding:10px 13px;border-bottom:1px solid rgba(255,255,255,0.025);}
+tbody tr{cursor:pointer;transition:background 0.1s;}
+tbody tr:hover td{background:rgba(26,115,232,0.06);}
+.badge{padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;}
+.inf{background:rgba(26,115,232,0.14);color:#64b5f6;}
+.up{color:#34a853;}.dn{color:#ea4335;}
+.empty{text-align:center;padding:50px;color:var(--muted);}
+.empty-ic{font-size:40px;margin-bottom:12px;}
+.fa{animation:fi 0.4s ease both;}
+@keyframes fi{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.spin{width:36px;height:36px;border:3px solid var(--bo);border-top-color:var(--blue);border-radius:50%;animation:sp 0.8s linear infinite;margin:60px auto;}
+@keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<aside class="sb">
+  <div class="sbl"><div class="sbi">📊</div><span class="sbt">Sales<span>BI</span></span></div>
+  <nav class="nav">
+    <div class="ns">Analytics</div>
+    <a class="ni" href="/dashboard">📈 Dashboard</a>
+    <a class="ni on" href="/my-dashboard">👤 My Profile</a>
+    <div class="ns">History</div>
+    <a class="ni on" href="/my-dashboard">🗂️ My Uploads</a>
+  </nav>
+  <div class="sf">
+    <button class="so" onclick="doOut()">🚪 Sign out</button>
+  </div>
+</aside>
+
+<header class="tb">
+  <span style="font-size:15px;font-weight:700;">👤 My Dashboard</span>
+  <button class="btn bp" onclick="window.location.href='/dashboard'">➕ New Analysis</button>
+</header>
+
+<main class="main" id="main">
+  <div class="spin"></div>
+</main>
+
+<script>
+let aC, dC;
+
+window.onload = function() { load(); };
+
+async function load() {
+  try {
+    const [pr, dr] = await Promise.all([fetch('/api/profile'), fetch('/api/my-dashboard')]);
+    const [pd, d] = await Promise.all([pr.json(), dr.json()]);
+    render(pd, d);
+  } catch(e) {
+    document.getElementById('main').innerHTML = '<div class="empty"><div class="empty-ic">😕</div><p>Failed to load. Check server.</p></div>';
+  }
+}
+
+function fm(n, m) {
+  if (n == null || n === undefined) return '—';
+  if (m) return (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0});
+  return Number(n).toLocaleString();
+}
+
+function an(id, t, money) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let s = 0; const a = Math.abs(t); const st = Math.max(a / 40, 1);
+  const iv = setInterval(() => { s += st; if (s >= a) { s = a; clearInterval(iv); } el.textContent = money ? (t<0?'-₹':'₹') + Math.floor(s).toLocaleString() : Math.floor(s).toLocaleString(); }, 30);
+}
+
+function render(pd, d) {
+  const name = pd.success ? pd.fullname : 'User';
+  const email = pd.success ? pd.email : '';
+  const initials = pd.success ? pd.initials : '?';
+  const uploads = d.success ? d.total_uploads : 0;
+  const analyzed = d.success ? d.analyzed_count : 0;
+
+  let html = `
+  <div class="hero fa">
+    <div class="hav">${initials}</div>
+    <div class="hinfo">
+      <div class="hname">${name}</div>
+      <div class="hemail">${email}</div>
+    </div>
+    <div class="hstats">
+      <div class="hst"><div class="hst-v" id="hU">0</div><div class="hst-l">Uploads</div></div>
+      <div class="hst"><div class="hst-v" id="hA">0</div><div class="hst-l">Analyzed</div></div>
+    </div>
+  </div>`;
+
+  if (d.success) {
+    const pc = d.total_profit_all >= 0 ? 'var(--green)' : 'var(--red)';
+    html += `
+    <div class="kg fa">
+      <div class="kc"><div class="kg2" style="background:var(--green);"></div><div class="ki">💰</div><div class="kl">Total Sales All Time</div><div class="kv" id="kS">—</div><div class="ks">Across all uploads</div></div>
+      <div class="kc"><div class="kg2" style="background:var(--blue);"></div><div class="ki">📈</div><div class="kl">Total Profit All Time</div><div class="kv" id="kP" style="color:${pc}">—</div><div class="ks" id="kPs">Net</div></div>
+      <div class="kc"><div class="kg2" style="background:var(--yellow);"></div><div class="ki">🏆</div><div class="kl">Best Product Ever</div><div class="kv" style="font-size:14px;margin-top:10px" id="kBP">—</div><div class="ks" id="kBPs">Top seller</div></div>
+      <div class="kc"><div class="kg2" style="background:var(--purple);"></div><div class="ki">🗂️</div><div class="kl">Total Uploads</div><div class="kv" id="kU">—</div><div class="ks">All time</div></div>
+    </div>
+    <div class="c2 fa">
+      <div class="card"><div class="ch"><span class="ct">📅 Upload Activity</span></div><div style="height:200px;"><canvas id="aC"></canvas></div></div>
+      <div class="card"><div class="ch"><span class="ct">💹 Sales per Dataset</span></div><div style="height:200px;"><canvas id="dC"></canvas></div></div>
+    </div>`;
+  }
+
+  html += `
+  <div class="card fa">
+    <div class="ch"><span class="ctl">🗂️ Upload History</span><span style="font-size:12px;color:var(--muted);">${uploads} uploads</span></div>
+    <div id="hist"></div>
+  </div>`;
+
+  document.getElementById('main').innerHTML = html;
+
+  // Animate numbers
+  an('hU', uploads, false);
+  an('hA', analyzed, false);
+
+  if (d.success) {
+    an('kS', d.total_sales_all, true);
+    an('kP', d.total_profit_all, true);
+    an('kU', d.total_uploads, false);
+    document.getElementById('kBP').textContent = d.best_product || 'N/A';
+    document.getElementById('kBPs').textContent = d.best_product_sales > 0 ? '$' + Number(d.best_product_sales).toLocaleString(undefined, {maximumFractionDigits:0}) : 'No data yet';
+    document.getElementById('kPs').innerHTML = d.total_profit_all >= 0 ? '<span class="up">▲ Profitable</span>' : '<span class="dn">▼ Net loss</span>';
+
+    // Activity chart
+    Chart.defaults.color = '#6b7280';
+    Chart.defaults.font.family = "'Plus Jakarta Sans',sans-serif";
+    if (d.activity && d.activity.length) {
+      new Chart(document.getElementById('aC'), {type:'line',data:{labels:d.activity.map(a=>a.date),datasets:[{data:d.activity.map(a=>a.count),borderColor:'#1a73e8',backgroundColor:'rgba(26,115,232,0.08)',fill:true,tension:0.4,pointBackgroundColor:'#1a73e8',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{stepSize:1}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
+    } else {
+      document.getElementById('aC').parentElement.innerHTML = '<p style="color:var(--muted);text-align:center;padding:60px 0;font-size:12px;">No activity yet</p>';
+    }
+
+    // Dataset sales chart
+    if (d.sales_per_dataset && d.sales_per_dataset.length) {
+      const top = d.sales_per_dataset.slice(0, 7);
+      new Chart(document.getElementById('dC'), {type:'bar',data:{labels:top.map(x=>x.filename.length>10?x.filename.substring(0,8)+'..':x.filename),datasets:[{label:'Sales',data:top.map(x=>x.sales),backgroundColor:'rgba(52,168,83,0.8)',borderRadius:4,borderSkipped:false},{label:'Profit',data:top.map(x=>x.profit),backgroundColor:'rgba(26,115,232,0.8)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},scales:{y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>'₹'+v.toLocaleString()}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
+    } else {
+      document.getElementById('dC').parentElement.innerHTML = '<p style="color:var(--muted);text-align:center;padding:60px 0;font-size:12px;">No analyzed datasets yet</p>';
+    }
+  }
+
+  // History table
+  const hist = document.getElementById('hist');
+  const ups = d.success ? d.recent_uploads : [];
+  if (!ups || !ups.length) {
+    hist.innerHTML = '<div class="empty"><div class="empty-ic">📂</div><p>No uploads yet.</p><br><a href="/dashboard" style="color:var(--blue);font-weight:600;font-size:13px;margin-top:8px;display:inline-block;">Upload your first dataset →</a></div>';
+    return;
+  }
+  let h = '<div class="tw"><table><thead><tr><th>#</th><th>File</th><th>Date</th><th>Rows</th><th style="text-align:right">Sales</th><th style="text-align:right">Profit</th><th>Action</th></tr></thead><tbody>';
+  ups.forEach((u, i) => {
+    const date = new Date(u.upload_date).toLocaleDateString();
+    const sales = u.total_sales != null ? '$' + Number(u.total_sales).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : '<span class="badge inf">N/A</span>';
+    const pv = u.total_profit;
+    const prof = pv != null ? `<span style="color:${pv>=0?'#4caf50':'#f44336'};font-weight:600">${(pv<0?'-₹':'₹')+Math.abs(pv).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span>` : '<span class="badge inf">N/A</span>';
+    h += `<tr onclick="window.location.href='/upload/${u.id}'"><td style="color:var(--muted)">${i+1}</td><td style="font-weight:600">📄 ${u.filename}</td><td style="color:var(--muted)">${date}</td><td>${u.total_rows ? u.total_rows.toLocaleString() : '—'}</td><td style="text-align:right">${sales}</td><td style="text-align:right">${prof}</td><td><span class="badge inf">View →</span></td></tr>`;
+  });
+  h += '</tbody></table></div>';
+  hist.innerHTML = h;
+}
+
+function doOut() {
+  fetch('/api/logout', {method:'POST'}).then(() => window.location.href = '/');
+}
+</script>
+</body>
+</html>

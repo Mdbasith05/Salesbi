@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SalesBI — Analysis Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0d1117;--sb:#090d18;--card:#131929;--c2:#1a2235;--bo:rgba(255,255,255,0.07);--blue:#1a73e8;--green:#34a853;--red:#ea4335;--yellow:#fbbc04;--purple:#a142f4;--text:#e6edf3;--muted:#6b7280;--f:'Plus Jakarta Sans',sans-serif;}
+body{font-family:var(--f);background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+.sb{width:230px;background:var(--sb);border-right:1px solid var(--bo);position:fixed;height:100vh;display:flex;flex-direction:column;z-index:100;}
+.sbl{padding:22px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--bo);}
+.sbi{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--green));display:flex;align-items:center;justify-content:center;font-size:17px;}
+.sbt{font-size:19px;font-weight:800;}.sbt span{color:var(--blue);}
+.nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:2px;}
+.ns{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.1px;padding:12px 10px 4px;}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--muted);font-size:13px;font-weight:500;text-decoration:none;transition:all 0.15s;border:1px solid transparent;}
+.ni:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.ni.on{background:rgba(26,115,232,0.14);color:var(--blue);border-color:rgba(26,115,232,0.18);}
+.sf{padding:14px 10px;border-top:1px solid var(--bo);}
+.so{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(234,67,53,0.08);border:1px solid rgba(234,67,53,0.15);border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;color:#ef5350;transition:all 0.2s;width:100%;}
+.so:hover{background:rgba(234,67,53,0.14);}
+.tb{position:fixed;top:0;left:230px;right:0;height:55px;background:rgba(13,17,23,0.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--bo);z-index:99;display:flex;align-items:center;justify-content:space-between;padding:0 24px;}
+.btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;font-family:var(--f);cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;}
+.bp{background:var(--blue);color:#fff;}.bp:hover{background:#1254c0;transform:translateY(-1px);}
+.bg{background:var(--green);color:#fff;}.bg:hover{background:#2a9647;}
+.bh{background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--bo);}.bh:hover{background:rgba(255,255,255,0.09);}
+.main{margin-left:230px;margin-top:55px;padding:24px;display:flex;flex-direction:column;gap:18px;}
+.card{background:var(--card);border:1px solid var(--bo);border-radius:14px;padding:20px;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.ct{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;}
+.ctl{font-size:15px;font-weight:700;}
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.kc{background:var(--card);border:1px solid var(--bo);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+.kc:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.3);}
+.kg2{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;filter:blur(28px);opacity:0.2;}
+.kl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;}
+.kv{font-size:26px;font-weight:800;margin:8px 0 5px;}
+.ks{font-size:11px;color:var(--muted);}
+.ki{position:absolute;right:14px;top:14px;font-size:20px;opacity:0.13;}
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.tw{overflow-x:auto;max-height:350px;overflow-y:auto;}
+.tw::-webkit-scrollbar{width:3px;}.tw::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{padding:9px 13px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;background:var(--c2);position:sticky;top:0;border-bottom:1px solid var(--bo);}
+tbody td{padding:9px 13px;border-bottom:1px solid rgba(255,255,255,0.025);}
+tbody tr:hover td{background:rgba(255,255,255,0.025);}
+.badge{padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;}
+.ok{background:rgba(52,168,83,0.14);color:#4caf50;}
+.no{background:rgba(234,67,53,0.14);color:#f44336;}
+.tag{font-size:11px;font-weight:600;padding:2px 9px;border-radius:5px;background:rgba(26,115,232,0.12);color:var(--blue);}
+.sec{font-size:14px;font-weight:800;padding:6px 0 2px;border-top:1px solid var(--bo);margin-top:4px;}
+.up{color:#34a853;}.dn{color:#ea4335;}
+.fa{animation:fi 0.4s ease both;}
+@keyframes fi{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.spin{width:36px;height:36px;border:3px solid var(--bo);border-top-color:var(--blue);border-radius:50%;animation:sp 0.8s linear infinite;margin:60px auto;}
+@keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<aside class="sb">
+  <div class="sbl"><div class="sbi">📊</div><span class="sbt">Sales<span>BI</span></span></div>
+  <nav class="nav">
+    <div class="ns">Analytics</div>
+    <a class="ni" href="/dashboard">📈 Dashboard</a>
+    <a class="ni" href="/my-dashboard">👤 My Profile</a>
+    <div class="ns">History</div>
+    <a class="ni on" href="/my-dashboard">🗂️ My Uploads</a>
+  </nav>
+  <div class="sf">
+    <button class="so" onclick="doOut()">🚪 Sign out</button>
+  </div>
+</aside>
+
+<header class="tb">
+  <span style="font-size:15px;font-weight:700;">🔍 Saved Analysis</span>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="btn bg" id="xlBtn" onclick="doXL()" style="display:none;">📥 Excel</button>
+    <button class="btn bh" id="pdBtn" onclick="doPDF()" style="display:none;">📄 PDF</button>
+    <button class="btn bp" onclick="window.location.href='/my-dashboard'">← Back</button>
+  </div>
+</header>
+
+<main class="main" id="main">
+  <div class="spin"></div>
+</main>
+
+<script>
+const UID = {{ upload_id }};
+let PD = null;
+
+window.onload = function() { loadData(); };
+
+async function loadData() {
+  try {
+    const r = await fetch('/api/upload/' + UID);
+    const d = await r.json();
+    if (!d.success) { showErr(d.error); return; }
+    PD = d;
+    render(d);
+    document.getElementById('xlBtn').style.display = 'inline-flex';
+    document.getElementById('pdBtn').style.display = 'inline-flex';
+  } catch(e) { showErr('Server error. Check Flask.'); }
+}
+
+function showErr(msg) {
+  document.getElementById('main').innerHTML = '<div style="text-align:center;padding:60px;color:var(--muted);"><div style="font-size:36px;margin-bottom:12px;">😕</div><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">Could not load</div><p>'+msg+'</p><a href="/my-dashboard" style="display:inline-flex;margin-top:16px;padding:8px 16px;background:var(--blue);color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">← Go Back</a></div>';
+}
+
+function fm(n, m) {
+  if (n == null) return '—';
+  if (m) return (n<0?'-₹':'₹') + Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  return Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
+}
+
+function render(d) {
+  const u=d.upload, a=d.analysis, P=d.products, C=d.columns;
+  let h = '';
+
+  h += `<div class="card fa">
+    <div class="ch"><span class="ctl">📁 ${u.filename}</span><span class="tag">${new Date(u.upload_date).toLocaleString()}</span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+      ${tile('Rows', u.total_rows ? u.total_rows.toLocaleString() : 0)}
+      ${tile('Columns', u.total_columns)}
+      ${tile('Duplicates', u.duplicate_rows)}
+      ${tile('Memory', (u.memory_usage_kb||0).toFixed(1)+' KB')}
+    </div>
+  </div>`;
+
+  if (a) {
+    const mg = a.total_sales>0 ? ((a.total_profit/a.total_sales)*100).toFixed(1) : 0;
+    const pc = a.total_profit>=0 ? 'var(--green)' : 'var(--red)';
+    const trend = a.total_profit>=0 ? `<span class="up">▲ ${mg}% margin</span>` : '<span class="dn">▼ Negative</span>';
+    h += `<div class="kg fa">
+      <div class="kc"><div class="kg2" style="background:var(--green);"></div><div class="ki">💰</div><div class="kl">Total Sales</div><div class="kv">${fm(a.total_sales,1)}</div><div class="ks">${a.product_count} products</div></div>
+      <div class="kc"><div class="kg2" style="background:var(--blue);"></div><div class="ki">📈</div><div class="kl">Profit / Loss</div><div class="kv" style="color:${pc}">${fm(a.total_profit,1)}</div><div class="ks">${trend}</div></div>
+      <div class="kc"><div class="kg2" style="background:var(--yellow);"></div><div class="ki">📦</div><div class="kl">Products</div><div class="kv">${a.product_count}</div><div class="ks">Unique items</div></div>
+      <div class="kc"><div class="kg2" style="background:var(--purple);"></div><div class="ki">🗃️</div><div class="kl">Total Rows</div><div class="kv">${(u.total_rows||0).toLocaleString()}</div><div class="ks">${u.duplicate_rows} duplicates</div></div>
+    </div>`;
+  }
+
+  if (P.length > 0) {
+    h += `<div class="c2 fa">
+      <div class="card"><div class="ch"><span class="ct">💹 Sales by Product</span></div><div style="height:230px;"><canvas id="sC"></canvas></div></div>
+      <div class="card"><div class="ch"><span class="ct">📊 Profit by Product</span></div><div style="height:230px;"><canvas id="pC"></canvas></div></div>
+    </div>
+    <div class="card fa">
+      <div class="ch"><span class="ctl">📦 Product Breakdown</span><span style="font-size:12px;color:var(--muted)">${P.length} products</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>#</th><th>Product</th><th style="text-align:right">Sales</th><th style="text-align:right">Profit</th><th style="text-align:right">Margin</th><th>Status</th></tr></thead>
+        <tbody>${P.map((p,i)=>{
+          const mg=p.sales>0?((p.profit/p.sales)*100).toFixed(1)+'%':'0%';
+          const pc=p.profit>=0?'#4caf50':'#f44336';
+          return`<tr><td style="color:var(--muted)">${i+1}</td><td style="font-weight:600">${p.product}</td><td style="text-align:right">${fm(p.sales,1)}</td><td style="text-align:right;color:${pc};font-weight:600">${fm(p.profit,1)}</td><td style="text-align:right">${mg}</td><td>${p.profit>=0?'<span class="badge ok">Profit</span>':'<span class="badge no">Loss</span>'}</td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>`;
+  }
+
+  const NC = Object.entries(C).filter(([,v])=>v.type==='numeric');
+  if (NC.length > 0) {
+    h += `<div class="sec fa">🔬 Column Statistics</div>
+    <div class="card fa">
+      <div class="ch"><span class="ctl">📐 Numeric Statistics</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>Column</th><th>Min</th><th>Mean</th><th>Max</th><th>Std Dev</th><th>Missing</th></tr></thead>
+        <tbody>${NC.map(([c,i])=>`<tr><td style="font-weight:600">${c}</td><td>${fm(i.min)}</td><td style="color:#64b5f6;font-weight:600">${fm(i.mean)}</td><td>${fm(i.max)}</td><td>${fm(i.std)}</td><td>${i.missing>0?`<span class="badge no">${i.missing_percent}%</span>`:'<span class="badge ok">None</span>'}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </div>`;
+  }
+
+  document.getElementById('main').innerHTML = h;
+
+  if (P.length > 0) {
+    Chart.defaults.color = '#6b7280';
+    Chart.defaults.font.family = "'Plus Jakarta Sans',sans-serif";
+    const top = P.slice(0,12);
+    const labels = top.map(p=>p.product.length>13?p.product.substring(0,11)+'..':p.product);
+    const opt = {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>'₹'+v.toLocaleString()}},x:{grid:{display:false},ticks:{maxRotation:35}}}};
+    new Chart(document.getElementById('sC'),{type:'bar',data:{labels,datasets:[{data:top.map(p=>p.sales),backgroundColor:'rgba(26,115,232,0.8)',borderRadius:5,borderSkipped:false}]},options:opt});
+    new Chart(document.getElementById('pC'),{type:'bar',data:{labels,datasets:[{data:top.map(p=>p.profit),backgroundColor:top.map(p=>p.profit>=0?'rgba(52,168,83,0.8)':'rgba(234,67,53,0.8)'),borderRadius:5,borderSkipped:false}]},options:opt});
+  }
+}
+
+function tile(label, val) {
+  return `<div style="background:var(--c2);border-radius:9px;padding:11px 14px;"><div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;">${label}</div><div style="font-size:18px;font-weight:800;color:var(--text);margin-top:5px;">${val ?? '—'}</div></div>`;
+}
+
+function doXL() {
+  if (!PD) return;
+  const wb=XLSX.utils.book_new(), u=PD.upload, a=PD.analysis;
+  const ov=[['Field','Value'],['File',u.filename],['Date',u.upload_date],['Rows',u.total_rows],['Columns',u.total_columns],['Duplicates',u.duplicate_rows]];
+  if(a) ov.push(['Total Sales',a.total_sales],['Total Profit',a.total_profit],['Products',a.product_count]);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ov),'Overview');
+  if(PD.products.length){const pr=[['Product','Sales','Profit','Margin%']];PD.products.forEach(p=>pr.push([p.product,p.sales,p.profit,p.sales>0?((p.profit/p.sales)*100).toFixed(2):0]));XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(pr),'Products');}
+  XLSX.writeFile(wb,'SalesBI_Detail_'+UID+'.xlsx');
+}
+
+function doPDF() {
+  if (!PD) return;
+  const{jsPDF}=window.jspdf; const doc=new jsPDF();
+  const u=PD.upload, a=PD.analysis;
+  doc.setFontSize(18);doc.setTextColor(26,115,232);doc.text('SalesBI - Saved Report',14,18);
+  doc.setFontSize(10);doc.setTextColor(120);doc.text('File: '+u.filename+' | '+new Date(u.upload_date).toLocaleString(),14,26);
+  const body=[['Rows',u.total_rows],['Columns',u.total_columns],['Duplicates',u.duplicate_rows]];
+  if(a) body.push(['Total Sales','₹'+Number(a.total_sales).toLocaleString()],['Total Profit','₹'+Number(a.total_profit).toLocaleString()],['Products',a.product_count]);
+  doc.autoTable({startY:32,head:[['Metric','Value']],body,headStyles:{fillColor:[26,115,232]},theme:'grid',styles:{fontSize:10}});
+  if(PD.products.length){doc.autoTable({startY:doc.lastAutoTable.finalY+10,head:[['Product','Sales','Profit','Margin%']],body:PD.products.slice(0,25).map(p=>[p.product,p.sales.toFixed(2),p.profit.toFixed(2),p.sales>0?((p.profit/p.sales)*100).toFixed(1)+'%':'0%']),headStyles:{fillColor:[52,168,83]},theme:'striped',styles:{fontSize:9}});}
+  doc.save('SalesBI_Detail_'+UID+'.pdf');
+}
+
+function doOut() {
+  fetch('/api/logout',{method:'POST'}).then(()=>window.location.href='/');
+}
+</script>
+</body>
+</html>
